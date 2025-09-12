@@ -5,9 +5,14 @@ import { UserCog, Pencil, Trash2, Plus, Mail } from "lucide-react";
 
 const initialProfessor = {
   name: "",
+  designation: "",
   department: "",
+  experience: "",
   email: "",
-  specialization: "",
+  image: "",
+  linkedIn: "",
+  googleScholar: "",
+  message: "",
 };
 
 const AdminProfessors = () => {
@@ -17,7 +22,8 @@ const AdminProfessors = () => {
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filtered, setFiltered] = useState([]);
-  const [showFormModal, setShowFormModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
@@ -49,7 +55,7 @@ const AdminProfessors = () => {
   const openAdd = () => {
     setFormData(initialProfessor);
     setCurrentId(null);
-    setShowFormModal(true);
+    setShowAddModal(true);
   };
 
   const openEdit = (id) => {
@@ -57,7 +63,7 @@ const AdminProfessors = () => {
     if (found) {
       setFormData(found);
       setCurrentId(id);
-      setShowFormModal(true);
+      setShowEditModal(true);
     }
   };
 
@@ -66,18 +72,24 @@ const AdminProfessors = () => {
     setShowDeleteModal(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleAddSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.department) {
       alert("Please fill all required fields");
       return;
     }
-    if (currentId) {
-      updateProfessor(currentId, formData);
-    } else {
-      addProfessor(formData);
+    addProfessor(formData);
+    setShowAddModal(false);
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.department) {
+      alert("Please fill all required fields");
+      return;
     }
-    setShowFormModal(false);
+    updateProfessor(currentId, formData);
+    setShowEditModal(false);
   };
 
   const handleDelete = () => {
@@ -168,73 +180,74 @@ const AdminProfessors = () => {
         </table>
       </div>
 
-      {/* Add/Edit Modal */}
-      {showFormModal && (
+      {/* Add Professor Modal */}
+      {showAddModal && (
         <div className="modal show d-block" tabIndex="-1">
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleAddSubmit}>
                 <div className="modal-header">
-                  <h5 className="modal-title">
-                    {currentId ? "Edit Professor" : "Add Professor"}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowFormModal(false)}
-                  ></button>
+                  <h5 className="modal-title">Add Professor</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowAddModal(false)}></button>
                 </div>
                 <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Name</label>
-                    <input
-                      className="form-control"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Department</label>
-                    <input
-                      className="form-control"
-                      name="department"
-                      value={formData.department}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input
-                      className="form-control"
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Specialization</label>
-                    <input
-                      className="form-control"
-                      name="specialization"
-                      value={formData.specialization}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  {Object.keys(initialProfessor).map((field) => (
+                    <div className="mb-3" key={field}>
+                      <label className="form-label text-capitalize">{field}</label>
+                      <input
+                        className="form-control"
+                        name={field}
+                        value={formData[field] || ""}
+                        onChange={handleChange}
+                        type={field === "email" ? "email" : "text"}
+                      />
+                    </div>
+                  ))}
                 </div>
                 <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={() => setShowFormModal(false)}
-                  >
+                  <button type="button" className="btn btn-outline-secondary" onClick={() => setShowAddModal(false)}>
                     Cancel
                   </button>
                   <button type="submit" className="btn btn-primary">
-                    {currentId ? "Update" : "Create"}
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Professor Modal */}
+      {showEditModal && (
+        <div className="modal show d-block" tabIndex="-1">
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <form onSubmit={handleEditSubmit}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Edit Professor</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
+                </div>
+                <div className="modal-body">
+                  {Object.keys(initialProfessor).map((field) => (
+                    <div className="mb-3" key={field}>
+                      <label className="form-label text-capitalize">{field}</label>
+                      <input
+                        className="form-control"
+                        name={field}
+                        value={formData[field] || ""}
+                        onChange={handleChange}
+                        type={field === "email" ? "email" : "text"}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-outline-secondary" onClick={() => setShowEditModal(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Update
                   </button>
                 </div>
               </form>
@@ -250,28 +263,14 @@ const AdminProfessors = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Confirm Deletion</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowDeleteModal(false)}
-                ></button>
+                <button type="button" className="btn-close" onClick={() => setShowDeleteModal(false)}></button>
               </div>
-              <div className="modal-body">
-                Are you sure you want to delete this professor?
-              </div>
+              <div className="modal-body">Are you sure you want to delete this professor?</div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShowDeleteModal(false)}
-                >
+                <button type="button" className="btn btn-outline-secondary" onClick={() => setShowDeleteModal(false)}>
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={handleDelete}
-                >
+                <button type="button" className="btn btn-danger" onClick={handleDelete}>
                   Delete
                 </button>
               </div>

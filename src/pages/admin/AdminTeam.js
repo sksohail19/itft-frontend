@@ -4,16 +4,15 @@ import { useData } from "../../context/DataContext";
 import { Pencil, Trash2, Plus, Linkedin, Github, Twitter } from "lucide-react";
 
 const initialTeamMember = {
+  rollNumber: "",
   name: "",
   role: "",
-  description: "",
-  imageUrl: "",
   email: "",
-  socialLinks: {
-    linkedin: "",
-    github: "",
-    twitter: "",
-  },
+  linkedin: "",
+  github: "",
+  twitter: "",
+  imageUrl: "",
+  portfolio: "",
 };
 
 const AdminTeam = () => {
@@ -23,7 +22,9 @@ const AdminTeam = () => {
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filtered, setFiltered] = useState([]);
-  const [showFormModal, setShowFormModal] = useState(false);
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
@@ -31,50 +32,42 @@ const AdminTeam = () => {
   }, []);
 
   useEffect(() => {
-    let list = team;
+    let list = team || [];  // ✅ fallback
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter(
         (m) =>
-          m.name.toLowerCase().includes(q) ||
-          m.role.toLowerCase().includes(q) ||
+          m.name?.toLowerCase().includes(q) ||
+          m.role?.toLowerCase().includes(q) ||
           (m.description || "").toLowerCase().includes(q)
       );
     }
     setFiltered(list);
   }, [team, searchQuery]);
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("social-")) {
-      const field = name.replace("social-", "");
-      setFormData({
-        ...formData,
-        socialLinks: {
-          ...formData.socialLinks,
-          [field]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const openAdd = () => {
     setFormData(initialTeamMember);
     setCurrentId(null);
-    setShowFormModal(true);
+    setShowAddModal(true);
   };
 
   const openEdit = (id) => {
-    const found = team.find((m) => m.id === id);
+    
+    const found = team.find((m) => m._id === id);
     if (found) {
       setFormData(found);
       setCurrentId(id);
-      setShowFormModal(true);
+      console.log("Current ID: ", id)
+      setShowEditModal(true);
     }
   };
 
@@ -83,18 +76,25 @@ const AdminTeam = () => {
     setShowDeleteModal(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.role || !formData.description) {
+    if (!formData.name || !formData.role || !formData.rollNumber) {
       alert("Please fill in all required fields.");
       return;
     }
-    if (currentId) {
-      updateTeamMember({ ...formData, id: currentId });
-    } else {
-      addTeamMember(formData);
+    console.log("Adding team member:", formData);
+    await addTeamMember(formData);
+    setShowAddModal(false);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.role || !formData.rollNumber) {
+      alert("Please fill in all required fields.");
+      return;
     }
-    setShowFormModal(false);
+    await updateTeamMember(currentId, formData);
+    setShowEditModal(false);
   };
 
   const handleDelete = () => {
@@ -137,7 +137,7 @@ const AdminTeam = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {(!filtered || filtered.length === 0) ? (
               <tr>
                 <td colSpan="5" className="text-center text-muted py-4">
                   No team members found.
@@ -145,7 +145,7 @@ const AdminTeam = () => {
               </tr>
             ) : (
               filtered.map((m) => (
-                <tr key={m.id}>
+                <tr key={m?._id || m?.email || m?.rollNumber}>
                   <td>
                     <div className="d-flex align-items-center gap-2">
                       <img
@@ -161,18 +161,18 @@ const AdminTeam = () => {
                   <td>{m.email || "-"}</td>
                   <td>
                     <div className="d-flex gap-2">
-                      {m.socialLinks?.linkedin && (
-                        <a href={m.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
+                      {m.linkedin && (
+                        <a href={m.linkedin} target="_blank" rel="noopener noreferrer">
                           <Linkedin size={16} className="text-muted" />
                         </a>
                       )}
-                      {m.socialLinks?.github && (
-                        <a href={m.socialLinks.github} target="_blank" rel="noopener noreferrer">
+                      {m.github && (
+                        <a href={m.github} target="_blank" rel="noopener noreferrer">
                           <Github size={16} className="text-muted" />
                         </a>
                       )}
-                      {m.socialLinks?.twitter && (
-                        <a href={m.socialLinks.twitter} target="_blank" rel="noopener noreferrer">
+                      {m.twitter && (
+                        <a href={m.twitter} target="_blank" rel="noopener noreferrer">
                           <Twitter size={16} className="text-muted" />
                         </a>
                       )}
@@ -181,13 +181,13 @@ const AdminTeam = () => {
                   <td className="text-end">
                     <button
                       className="btn btn-sm btn-outline-primary me-2"
-                      onClick={() => openEdit(m.id)}
+                      onClick={() => openEdit(m._id)}
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       className="btn btn-sm btn-outline-danger"
-                      onClick={() => confirmDelete(m.id)}
+                      onClick={() => confirmDelete(m._id)}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -199,125 +199,26 @@ const AdminTeam = () => {
         </table>
       </div>
 
-      {/* Add/Edit Modal */}
-      {showFormModal && (
-        <div className="modal show d-block" tabIndex="-1">
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <form onSubmit={handleSubmit}>
-                <div className="modal-header">
-                  <h5 className="modal-title">
-                    {currentId ? "Edit Team Member" : "Add Team Member"}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowFormModal(false)}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Full Name</label>
-                    <input
-                      className="form-control"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Role</label>
-                    <input
-                      className="form-control"
-                      name="role"
-                      value={formData.role}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Description</label>
-                    <textarea
-                      className="form-control"
-                      name="description"
-                      rows="3"
-                      value={formData.description}
-                      onChange={handleChange}
-                      required
-                    ></textarea>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Profile Image URL</label>
-                    <input
-                      className="form-control"
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input
-                      className="form-control"
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </div>
+      {/* Add Modal */}
+      {showAddModal && (
+        <TeamModal
+          title="Add Team Member"
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleAddSubmit}
+          onClose={() => setShowAddModal(false)}
+        />
+      )}
 
-                  <h6 className="mt-3">Social Links (Optional)</h6>
-                  <div className="mb-3">
-                    <label className="form-label d-flex align-items-center gap-1">
-                      <Linkedin size={14} /> LinkedIn
-                    </label>
-                    <input
-                      className="form-control"
-                      name="social-linkedin"
-                      value={formData.socialLinks.linkedin}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label d-flex align-items-center gap-1">
-                      <Github size={14} /> GitHub
-                    </label>
-                    <input
-                      className="form-control"
-                      name="social-github"
-                      value={formData.socialLinks.github}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label d-flex align-items-center gap-1">
-                      <Twitter size={14} /> Twitter
-                    </label>
-                    <input
-                      className="form-control"
-                      name="social-twitter"
-                      value={formData.socialLinks.twitter}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={() => setShowFormModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    {currentId ? "Update Member" : "Create Member"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+      {/* Edit Modal */}
+      {showEditModal && (
+        <TeamModal
+          title="Edit Team Member"
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleEditSubmit}
+          onClose={() => setShowEditModal(false)}
+        />
       )}
 
       {/* Delete Modal */}
@@ -355,5 +256,105 @@ const AdminTeam = () => {
     </AdminLayout>
   );
 };
+
+// ✅ Reusable Modal Component for Add/Edit
+const TeamModal = ({ title, formData, handleChange, handleSubmit, onClose }) => (
+  <div className="modal show d-block" tabIndex="-1">
+    <div className="modal-dialog modal-lg">
+      <div className="modal-content">
+        <form onSubmit={handleSubmit}>
+          <div className="modal-header">
+            <h5 className="modal-title">{title}</h5>
+            <button type="button" className="btn-close" onClick={onClose}></button>
+          </div>
+          <div className="modal-body">
+            <div className="mb-3">
+              <label className="form-label">Full Name</label>
+              <input
+                className="form-control"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Roll Number</label>
+              <input
+                className="form-control"
+                name="rollNumber"
+                value={formData.rollNumber}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Role</label>
+              <input
+                className="form-control"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Profile imageUrl URL</label>
+              <input
+                className="form-control"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                className="form-control"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <h6 className="mt-3">Social Links</h6>
+            <div className="mb-3">
+              <label className="form-label d-flex align-items-center gap-1">
+                <Linkedin size={14} /> LinkedIn
+              </label>
+              <input
+                className="form-control"
+                name="linkedin"
+                value={formData.linkedin}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label d-flex align-items-center gap-1">
+                <Github size={14} /> GitHub
+              </label>
+              <input
+                className="form-control"
+                name="github"
+                value={formData.github}
+                onChange={handleChange}
+              />
+            </div>
+            
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-outline-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary">
+              {title.includes("Edit") ? "Update Member" : "Create Member"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+);
 
 export default AdminTeam;

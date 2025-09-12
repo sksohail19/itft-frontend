@@ -14,10 +14,12 @@ import AdminResults from './pages/admin/AdminResults';
 import AdminTeam from './pages/admin/AdminTeam';
 import AdminProfessors from './pages/admin/AdminProfessors';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements';
+import AdminStudents from './pages/admin/AdminStudents';
 
 /* LOGIN & Register PAGE IMPORT */
 import Login from './pages/login';
 import SignUp from './pages/signup';
+import StudentRegister from './pages/StudentRegister';
 
 /* PAGES IMPORT */
 import PageNotFound from './pages/PageNotFound';
@@ -79,6 +81,13 @@ function App() {
               </ProtectedRoute>
             } />
 
+            <Route path="/admin/students" element={
+              <ProtectedRoute>
+                <AdminStudents />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/students/register" element={<StudentRegister />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </Router>

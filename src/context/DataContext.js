@@ -25,7 +25,7 @@ const DataProvider = ({ children }) => {
                 ]);
                 setEvents(eventsRes.data.events);
                 setResults(resultsRes.data.results);
-                setTeam(teamRes.data.team);
+                setTeam(teamRes.data.teams);
                 setProfessors(professorsRes.data.faculties);
                 setAnnouncements(announcementsRes.data.announcements);
                 setStudents(studentsRes.data.students);
@@ -188,18 +188,39 @@ const DataProvider = ({ children }) => {
 
     /* RESULTS CRUD OPERATIONS */
     const addResult = async (result) => {
+        const eventID = result.eventID;
+        const eventName = result.eventName;
+        const winner = result.winner;
+        const runnerUp = result.runnerUp;
+        const date = result.date;
+        const noOfParticipants = result.noOfParticipants;
+        const video = result.video;
+        const venue = result.venue;
+        const resultSheet = result.resultSheet;
+        const eventsImages = result.eventsImages;
         try {
             const res = await axios.post(
                 "http://localhost:5000/api/results/create",
-                result,
+                {
+                    eventID,
+                    eventName,
+                    winner,
+                    runnerUp,
+                    date,
+                    noOfParticipants,
+                    video,
+                    venue,
+                    resultSheet,
+                    eventsImages
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        "authToken": localStorage.getItem("authToken"),
+                        authToken: localStorage.getItem("authToken"),
                     },
                 }
             );
-
+            console.log("Added Successfully ", res.data.result)
             if (res.status === 200) {
                 const newResult = res.data.result;
                 setResults((prevResults) => [newResult, ...prevResults]);
@@ -213,11 +234,22 @@ const DataProvider = ({ children }) => {
         }
     }
 
-    const editResult = async (id, updatedData) => {
+    const editResult = async (id, result) => {
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/results/update/${id}`,
-                updatedData,
+                {
+                    eventID: result.eventID,
+                    eventName: result.eventName,
+                    winner: result.winner,
+                    runnerUp: result.runnerUp,
+                    date: result.date,
+                    noOfParticipants: result.noOfParticipants,
+                    video: result.video,
+                    venue: result.venue,
+                    eventsImages: result.eventsImages,
+                    resultSheet: result.resultSheet
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -310,10 +342,19 @@ const DataProvider = ({ children }) => {
 
     /* TEAM CRUD OPERATIONS */
     const addTeamMember = async (memberData) => {
+        console.log("Starting Operation")
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/team/create",
-                memberData,
+                "http://localhost:5000/api/team/add",
+                {
+                    name: memberData.name,
+                    rollNumber: memberData.rollNumber,
+                    role: memberData.role,
+                    image: memberData.imageUrl,   // ✅ use consistent key
+                    email: memberData.email,
+                    linkedin: memberData.linkedin,
+                    gitHub: memberData.github,
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -321,10 +362,33 @@ const DataProvider = ({ children }) => {
                     },
                 }
             );
+
+            console.log("Add Team Member Response:", res);
+
             if (res.status === 200) {
-                const newMember = res.data.member;
-                setTeam((prevTeam) => [newMember, ...prevTeam]);
-                return newMember;
+                if (res.data.user) {
+                    // backend returned a single new member
+                    const newMember = {
+                        ...res.data.user,
+                        imageUrl: res.data.user.image || res.data.member.imageUrl,
+                        github: res.data.user.gitHub,
+                        linkedin: res.data.user.linkedin
+                    };
+                    setTeam((prevTeam = []) => [newMember, ...prevTeam]); // ✅ fallback to []
+                    return newMember;
+                }
+                /*
+                if (res.data.team) {
+                    // backend returned the full team
+                    const updatedTeam = res.data.team.map((m) => ({
+                        ...m,
+                        imageUrl: m.image || m.imageUrl,
+                    }));
+                    setTeam(updatedTeam);
+                    return updatedTeam;
+                }
+*/
+                throw new Error("Unexpected response format from backend");
             } else {
                 throw new Error("Failed to add team member");
             }
@@ -332,13 +396,22 @@ const DataProvider = ({ children }) => {
             console.error("Error adding team member:", errors);
             throw errors;
         }
-    }
+    };
+
 
     const editTeamMember = async (id, updatedData) => {
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/team/update/${id}`,
-                updatedData,
+                {
+                    name: updatedData.name,
+                    rollNumber: updatedData.rollNumber,
+                    role: updatedData.role,
+                    image: updatedData.imageUrl,   // ✅ use consistent key
+                    email: updatedData.email,
+                    linkedin: updatedData.linkedin,
+                    gitHub: updatedData.github,
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -361,11 +434,20 @@ const DataProvider = ({ children }) => {
     }
 
     // Add missing updateTeamMember function
-    const updateTeamMember = async (updatedMember) => {
+    const updateTeamMember = async (currentId, updatedMember) => {
+        //const { name, rollNumber, role, image, email, linkedin, gitHub, portfolio } = updatedMember;
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/team/update/${updatedMember.id}`,
-                updatedMember,
+                `http://localhost:5000/api/team/update/${currentId}`,
+               {
+                    name: updatedMember.name,
+                    rollNumber: updatedMember.rollNumber,
+                    role: updatedMember.role,
+                    image: updatedMember.imageUrl,   // ✅ use consistent key
+                    email: updatedMember.email,
+                    linkedin: updatedMember.linkedin,
+                    gitHub: updatedMember.github,
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -374,7 +456,7 @@ const DataProvider = ({ children }) => {
                 }
             );
             if (res.status === 200) {
-                const savedMember = res.data.member;
+                const savedMember = res.data.user;
                 setTeam((prevTeam) =>
                     prevTeam.map((member) => (member.id === savedMember.id ? savedMember : member))
                 );
@@ -397,7 +479,7 @@ const DataProvider = ({ children }) => {
                 }
             });
             if (res.status === 200) {
-                setTeam((prevTeam) => prevTeam.filter((member) => member._id !== id && member.id !== id));
+                setTeam((prevTeam) => prevTeam.filter((user) => user._id !== id && user.id !== id));
                 return true;
             } else {
                 throw new Error("Failed to delete team member");
@@ -450,8 +532,18 @@ const DataProvider = ({ children }) => {
     const addProfessor = async (professorData) => {
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/professors/create",
-                professorData,
+                "http://localhost:5000/api/professors/add",
+                {
+                    name: professorData.name,
+                    designation: professorData.designation,
+                    department: professorData.department,
+                    image: professorData.image,
+                    experience: professorData.experience,
+                    email: professorData.email,
+                    linkedIn: professorData.linkedIn,
+                    googleScholar: professorData.googleScholar,
+                    message: professorData.message
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -473,11 +565,21 @@ const DataProvider = ({ children }) => {
         }
     }
 
-    const editProfessor = async (id, updatedData) => {
+    const editProfessor = async (id, professorData) => {
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/professors/update/${id}`,
-                updatedData,
+                {
+                    name: professorData.name,
+                    designation: professorData.designation,
+                    department: professorData.department,
+                    image: professorData.image,
+                    experience: professorData.experience,
+                    email: professorData.email,
+                    linkedIn: professorData.linkedIn,
+                    googleScholar: professorData.googleScholar,
+                    message: professorData.message
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -568,17 +670,28 @@ const DataProvider = ({ children }) => {
     const addStudent = async (studentsData) => {
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/students/create",
-                studentsData,
+                "http://localhost:5000/api/students/add",
+                {
+                    regno : studentsData.regno,
+                    name : studentsData.name,
+                    studentEmail : studentsData.studentEmail,
+                    year : studentsData.year,
+                    section : studentsData.section,
+                    image : studentsData.image,
+                    linkedin : studentsData.linkedin,
+                    github : studentsData.github,
+                    personalEmail : studentsData.personalEmail,
+                    portfolio : studentsData.portfolio
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        "authToken": localStorage.getItem("authToken"),
                     },
                 }
             );
+            console.log("Added Successfully: ", res);
             if (res.status === 200) {
-                const newStudent = res.data.student;
+                const newStudent = res.data.Student;
                 setStudents((prevStudents) => [newStudent, ...prevStudents]);
                 return newStudent;
             } else {
@@ -590,11 +703,22 @@ const DataProvider = ({ children }) => {
         }
     }
 
-    const editStudent = async (id, updatedData) => {
+    const editStudent = async (id, studentsData) => {
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/students/update/${id}`,
-                updatedData,
+                {
+                    regno : studentsData.regno,
+                    name : studentsData.name,
+                    studentEmail : studentsData.studentEmail,
+                    year : studentsData.year,
+                    section : studentsData.section,
+                    image : studentsData.image,
+                    linkedin : studentsData.linkedin,
+                    github : studentsData.github,
+                    personalEmail : studentsData.personalEmail,
+                    portfolio : studentsData.portfolio
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -603,7 +727,7 @@ const DataProvider = ({ children }) => {
                 }
             );
             if (res.status === 200) {
-                const updatedStudent = res.data.student;
+                const updatedStudent = res.data.user;
                 setStudents((prevStudents) =>
                     prevStudents.map((student) => (student._id === id ? updatedStudent : student))
                 );

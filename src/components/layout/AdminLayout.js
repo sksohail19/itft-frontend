@@ -31,6 +31,7 @@ const AdminLayout = ({ children }) => {
     { name: "Team", path: "/admin/team", icon: <Users size={18} /> },
     { name: "Professors", path: "/admin/professors", icon: <UserCog size={18} /> },
     { name: "Announcements", path: "/admin/announcements", icon: <BellRing size={18} /> },
+    { name: "Students", path: "/admin/students", icon: <Users size={18} /> },
   ];
 
   const isActive = (path) => location.pathname === path;
