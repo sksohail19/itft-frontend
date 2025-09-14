@@ -5,7 +5,8 @@ const TestimonialsSection = () => {
       role: "Cloud Engineer at Birllio",
       quote:
         "Being part of ITFT has been an amazing experience. I’ve learned so much from the workshops and made great friends along the way!",
-      image: "https://iili.io/KuuJu9e.jpg",
+      //image: "https://iili.io/KuuJu9e.jpg",
+      image: "https://placehold.co/100x100?text=Vasavi",
     },
     {
       name: "Srinivasa Rao",
