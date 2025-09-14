@@ -16,12 +16,12 @@ const DataProvider = ({ children }) => {
         const fetchData = async () => {
             try {
                 const [eventsRes, resultsRes, teamRes, professorsRes, announcementsRes, studentsRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/events/get/all', { headers: { "Content-Type": "application/json" } }),
-                    axios.get('http://localhost:5000/api/results/get/all', { headers: { "Content-Type": "application/json" } }),
-                    axios.get('http://localhost:5000/api/team/get/all', { headers: { "Content-Type": "application/json" } }),
-                    axios.get('http://localhost:5000/api/professors/get/all', { headers: { "Content-Type": "application/json" } }),
-                    axios.get('http://localhost:5000/api/announcements/get/all', { headers: { "Content-Type": "application/json" } }),
-                    axios.get('http://localhost:5000/api/students/get/all', { headers: { "Content-Type": "application/json" } })
+                    axios.get('https://itft-backend.onrender.com/api/events/get/all', { headers: { "Content-Type": "application/json" } }),
+                    axios.get('https://itft-backend.onrender.com/api/results/get/all', { headers: { "Content-Type": "application/json" } }),
+                    axios.get('https://itft-backend.onrender.com/api/team/get/all', { headers: { "Content-Type": "application/json" } }),
+                    axios.get('https://itft-backend.onrender.com/api/professors/get/all', { headers: { "Content-Type": "application/json" } }),
+                    axios.get('https://itft-backend.onrender.com/api/announcements/get/all', { headers: { "Content-Type": "application/json" } }),
+                    axios.get('https://itft-backend.onrender.com/api/students/get/all', { headers: { "Content-Type": "application/json" } })
                 ]);
                 setEvents(eventsRes.data.events);
                 setResults(resultsRes.data.results);
@@ -52,7 +52,7 @@ const DataProvider = ({ children }) => {
             const type = eventData.type;
             const status = eventData.status;
             //console.log(localStorage.getItem("authToken"));
-            const res = await axios.post("http://localhost:5000/api/events/create", {
+            const res = await axios.post("https://itft-backend.onrender.com/api/events/create", {
                 title, description, date, location, registrationLink, poster, type, status
             }, {
                 headers: {
@@ -91,7 +91,7 @@ const DataProvider = ({ children }) => {
         const status = eventData.status;
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/events/update/${eventData._id}`,
+                `https://itft-backend.onrender.com/api/events/update/${eventData._id}`,
                 { title, description, date, location, registrationLink, poster, type, status },
                 {
                     headers: {
@@ -118,7 +118,7 @@ const DataProvider = ({ children }) => {
     const deleteEvent = async (eventId) => {
         try {
             await axios.delete(
-                `http://localhost:5000/api/events/${eventId}`,
+                `https://itft-backend.onrender.com/api/events/${eventId}`,
                 {
                     headers: {
                         "authToken": `${localStorage.getItem("authToken")}`,
@@ -136,7 +136,7 @@ const DataProvider = ({ children }) => {
     const deleteEventByID = async (eventId) => {
         try {
             const res = await axios.delete(
-                `http://localhost:5000/api/events/delete/${eventId}`,
+                `https://itft-backend.onrender.com/api/events/delete/${eventId}`,
                 {
                     headers: {
                         "authToken": `${localStorage.getItem("authToken")}`,
@@ -153,7 +153,7 @@ const DataProvider = ({ children }) => {
 
     const deteleEvent = async (id) => {
         try {
-            const res = await axios.delete("http://localhost:5000/api/events/delete/all", {
+            const res = await axios.delete("https://itft-backend.onrender.com/api/events/delete/all", {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -172,7 +172,7 @@ const DataProvider = ({ children }) => {
 
     const getEventByID = async (id) => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/events/get/${id}`, {
+            const res = await axios.get(`https://itft-backend.onrender.com/api/events/get/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -209,7 +209,7 @@ const DataProvider = ({ children }) => {
 
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/results/create",
+                "https://itft-backend.onrender.com/api/results/create",
                 {
                     eventID,
                     eventName,
@@ -250,7 +250,7 @@ const DataProvider = ({ children }) => {
         );
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/results/update/${id}`,
+                `https://itft-backend.onrender.com/api/results/update/${id}`,
                 {
                     eventID: result.eventID,
                     eventName: result.eventName,
@@ -297,7 +297,7 @@ const DataProvider = ({ children }) => {
 
     const deleteResults = async () => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/results/delete/all`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/results/delete/all`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -317,7 +317,7 @@ const DataProvider = ({ children }) => {
 
     const deleteResultByID = async (id) => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/results/delete/${id}`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/results/delete/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -337,7 +337,7 @@ const DataProvider = ({ children }) => {
 
     const getResultByID = async (id) => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/results/get/${id}`, {
+            const res = await axios.get(`https://itft-backend.onrender.com/api/results/get/${id}`, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -358,7 +358,7 @@ const DataProvider = ({ children }) => {
         console.log("Starting Operation")
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/team/add",
+                "https://itft-backend.onrender.com/api/team/add",
                 {
                     name: memberData.name,
                     rollNumber: memberData.rollNumber,
@@ -416,7 +416,7 @@ const DataProvider = ({ children }) => {
     const editTeamMember = async (id, updatedData) => {
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/team/update/${id}`,
+                `https://itft-backend.onrender.com/api/team/update/${id}`,
                 {
                     name: updatedData.name,
                     rollNumber: updatedData.rollNumber,
@@ -453,7 +453,7 @@ const DataProvider = ({ children }) => {
         //const { name, rollNumber, role, image, email, linkedin, gitHub, portfolio } = updatedMember;
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/team/update/${currentId}`,
+                `https://itft-backend.onrender.com/api/team/update/${currentId}`,
                 {
                     name: updatedMember.name,
                     rollNumber: updatedMember.rollNumber,
@@ -488,7 +488,7 @@ const DataProvider = ({ children }) => {
 
     const deleteTeamMember = async (id) => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/team/delete/${id}`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/team/delete/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -508,7 +508,7 @@ const DataProvider = ({ children }) => {
 
     const deleteTeamMembers = async () => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/team/delete/all`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/team/delete/all`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -528,7 +528,7 @@ const DataProvider = ({ children }) => {
 
     const getTeamMemberByID = async (id) => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/team/get/${id}`, {
+            const res = await axios.get(`https://itft-backend.onrender.com/api/team/get/${id}`, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -548,7 +548,7 @@ const DataProvider = ({ children }) => {
     const addProfessor = async (professorData) => {
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/professors/add",
+                "https://itft-backend.onrender.com/api/professors/add",
                 {
                     name: professorData.name,
                     designation: professorData.designation,
@@ -585,7 +585,7 @@ const DataProvider = ({ children }) => {
     const editProfessor = async (id, professorData) => {
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/professors/update/${id}`,
+                `https://itft-backend.onrender.com/api/professors/update/${id}`,
                 {
                     name: professorData.name,
                     designation: professorData.designation,
@@ -627,7 +627,7 @@ const DataProvider = ({ children }) => {
 
     const deleteProfessor = async (id) => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/professors/delete/${id}`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/professors/delete/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -647,7 +647,7 @@ const DataProvider = ({ children }) => {
 
     const deleteProfessors = async () => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/professors/delete/all`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/professors/delete/all`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -668,7 +668,7 @@ const DataProvider = ({ children }) => {
 
     const getProfessorByID = async (id) => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/professors/get/${id}`, {
+            const res = await axios.get(`https://itft-backend.onrender.com/api/professors/get/${id}`, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -688,7 +688,7 @@ const DataProvider = ({ children }) => {
     const addStudent = async (studentsData) => {
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/students/add",
+                "https://itft-backend.onrender.com/api/students/add",
                 {
                     regno: studentsData.regno,
                     name: studentsData.name,
@@ -725,7 +725,7 @@ const DataProvider = ({ children }) => {
     const editStudent = async (id, studentsData) => {
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/students/update/${id}`,
+                `https://itft-backend.onrender.com/api/students/update/${id}`,
                 {
                     regno: studentsData.regno,
                     name: studentsData.name,
@@ -763,7 +763,7 @@ const DataProvider = ({ children }) => {
 
     const deleteStudent = async (id) => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/students/delete/${id}`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/students/delete/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -783,7 +783,7 @@ const DataProvider = ({ children }) => {
 
     const deleteStudents = async () => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/students/delete/all`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/students/delete/all`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),
@@ -803,7 +803,7 @@ const DataProvider = ({ children }) => {
 
     const getStudentByID = async (id) => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/students/get/${id}`, {
+            const res = await axios.get(`https://itft-backend.onrender.com/api/students/get/${id}`, {
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -825,7 +825,7 @@ const DataProvider = ({ children }) => {
         console.log(announcementData);
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/announcements/create",
+                "https://itft-backend.onrender.com/api/announcements/create",
                 { title, description, date, isActive },
                 {
                     headers: {
@@ -866,7 +866,7 @@ const DataProvider = ({ children }) => {
         const { title, description, date, isActive } = updatedData;
         try {
             const res = await axios.put(
-                `http://localhost:5000/api/announcements/update/${id}`,
+                `https://itft-backend.onrender.com/api/announcements/update/${id}`,
                 { title, description, date, isActive },
                 {
                     headers: {
@@ -897,7 +897,7 @@ const DataProvider = ({ children }) => {
 
     const deleteAnnouncement = async (id) => {
         try {
-            const res = await axios.delete(`http://localhost:5000/api/announcements/delete/${id}`, {
+            const res = await axios.delete(`https://itft-backend.onrender.com/api/announcements/delete/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "authToken": localStorage.getItem("authToken"),

@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      axios.get("http://localhost:5000/api/auth/me", { headers: { "authToken": `${token}` } })
+      axios.get("https://itft-backend.onrender.com/api/auth/me", { headers: { "authToken": `${token}` } })
         .then(res => {
           setUser(res.data.user);
           setIsAuthenticated(true);
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
+      const res = await axios.post("https://itft-backend.onrender.com/api/auth/login", { email, password });
       if (res.status === 200) {
         //console.log(res.data);
         localStorage.setItem("authToken", res.data.authToken);
