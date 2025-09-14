@@ -153,7 +153,7 @@ const AdminAnnouncements = () => {
                         <button
                           className="btn btn-sm btn-outline-danger"
                           onClick={() => {
-                            setCurrentId(a._id);
+                            setCurrentId(a?._id);
                             setShowDeleteModal(true);
                           }}
                         >

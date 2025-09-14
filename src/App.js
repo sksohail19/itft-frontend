@@ -22,7 +22,13 @@ import SignUp from './pages/signup';
 import StudentRegister from './pages/StudentRegister';
 
 /* PAGES IMPORT */
+import Home from "./pages/Index";
 import PageNotFound from './pages/PageNotFound';
+import EventPage from "./pages/EventPage";
+import Team from "./pages/Team";
+import Results from "./pages/Results";
+import Announcements from "./pages/Announcements";
+import Contact from "./pages/Contact";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -42,12 +48,13 @@ function App() {
       <DataProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<h1>Home Page</h1>} />
-            <Route path="/about" element={<h1>About Page</h1>} />
-            <Route path="login" element={<Login />} />
-            
-            <Route path="/editNote/:id" element={<h1>Edit Note</h1>} />
-            <Route path="/contact" element={<h1>Contact Page</h1>} />
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/events" element={<EventPage />} ></Route>
+            <Route path="/team" element={<Team />} ></Route>
+            <Route path="/results" element={<Results />} />
+            <Route path="/announcements" element={<Announcements />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/signup" element={<SignUp />} />
             {/* Admin routes - all protected */}
             <Route path="/admin" element={

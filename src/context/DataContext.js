@@ -48,7 +48,7 @@ const DataProvider = ({ children }) => {
             const date = eventData.date;
             const location = eventData.location;
             const registrationLink = eventData.registrationLink;
-            const poster = eventData.imageUrl;
+            const poster = `https://drive.google.com/uc?export=view&id=${eventData.imageUrl}`;
             const type = eventData.type;
             const status = eventData.status;
             //console.log(localStorage.getItem("authToken"));
@@ -62,8 +62,12 @@ const DataProvider = ({ children }) => {
             });
 
             if (res.status === 200) {
-                console.log("Events: ", events);
-                const newEvent = res.data.event;
+                const newEvent = {
+                    ...res.data.event,
+                    imageUrl: eventData.imageUrl, // keep imageId (Google Drive)
+                    time: eventData.time,         // include time
+                };
+
                 setEvents((prevEvents) => [newEvent, ...prevEvents]);
                 return newEvent;
             } else {
@@ -82,7 +86,7 @@ const DataProvider = ({ children }) => {
         const date = eventData.date;
         const location = eventData.location;
         const registrationLink = eventData.registrationLink;
-        const poster = eventData.imageUrl;
+        const poster = `https://drive.google.com/uc?export=view&id=${eventData.imageUrl}`;
         const type = eventData.type;
         const status = eventData.status;
         try {
@@ -188,6 +192,7 @@ const DataProvider = ({ children }) => {
 
     /* RESULTS CRUD OPERATIONS */
     const addResult = async (result) => {
+        console.log(result);
         const eventID = result.eventID;
         const eventName = result.eventName;
         const winner = result.winner;
@@ -197,7 +202,11 @@ const DataProvider = ({ children }) => {
         const video = result.video;
         const venue = result.venue;
         const resultSheet = result.resultSheet;
-        const eventsImages = result.eventsImages;
+        // Assuming result.eventsImages = "id1,id2,id3"
+        const eventsImages = (result.eventsImages || []).map(
+            id => `https://drive.google.com/uc?export=view&id=${id.trim()}`
+        );
+
         try {
             const res = await axios.post(
                 "http://localhost:5000/api/results/create",
@@ -235,6 +244,10 @@ const DataProvider = ({ children }) => {
     }
 
     const editResult = async (id, result) => {
+        // Assuming result.eventsImages = "id1,id2,id3"
+         const eventsImage = (result.eventsImages || []).map(
+            id => `https://drive.google.com/uc?export=view&id=${id.trim()}`
+        );
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/results/update/${id}`,
@@ -247,7 +260,7 @@ const DataProvider = ({ children }) => {
                     noOfParticipants: result.noOfParticipants,
                     video: result.video,
                     venue: result.venue,
-                    eventsImages: result.eventsImages,
+                    eventsImages: eventsImage,
                     resultSheet: result.resultSheet
                 },
                 {
@@ -350,7 +363,8 @@ const DataProvider = ({ children }) => {
                     name: memberData.name,
                     rollNumber: memberData.rollNumber,
                     role: memberData.role,
-                    image: memberData.imageUrl,   // ✅ use consistent key
+                    //image: `https://drive.google.com/uc?export=view&id=${memberData.imageUrl}`, 
+                    image: memberData.imageUrl,  // ✅ use consistent key
                     email: memberData.email,
                     linkedin: memberData.linkedin,
                     gitHub: memberData.github,
@@ -407,7 +421,7 @@ const DataProvider = ({ children }) => {
                     name: updatedData.name,
                     rollNumber: updatedData.rollNumber,
                     role: updatedData.role,
-                    image: updatedData.imageUrl,   // ✅ use consistent key
+                    image: `https://drive.google.com/uc?export=view&id=${updatedData.imageUrl}`,   // ✅ use consistent key
                     email: updatedData.email,
                     linkedin: updatedData.linkedin,
                     gitHub: updatedData.github,
@@ -439,11 +453,11 @@ const DataProvider = ({ children }) => {
         try {
             const res = await axios.put(
                 `http://localhost:5000/api/team/update/${currentId}`,
-               {
+                {
                     name: updatedMember.name,
                     rollNumber: updatedMember.rollNumber,
                     role: updatedMember.role,
-                    image: updatedMember.imageUrl,   // ✅ use consistent key
+                    image: `https://drive.google.com/uc?export=view&id=${updatedMember.imageUrl}`,   // ✅ use consistent key
                     email: updatedMember.email,
                     linkedin: updatedMember.linkedin,
                     gitHub: updatedMember.github,
@@ -537,7 +551,7 @@ const DataProvider = ({ children }) => {
                     name: professorData.name,
                     designation: professorData.designation,
                     department: professorData.department,
-                    image: professorData.image,
+                    image: `https://drive.google.com/uc?export=view&id=${professorData.image}`,
                     experience: professorData.experience,
                     email: professorData.email,
                     linkedIn: professorData.linkedIn,
@@ -573,7 +587,7 @@ const DataProvider = ({ children }) => {
                     name: professorData.name,
                     designation: professorData.designation,
                     department: professorData.department,
-                    image: professorData.image,
+                    image: `https://drive.google.com/uc?export=view&id=${professorData.image}`,
                     experience: professorData.experience,
                     email: professorData.email,
                     linkedIn: professorData.linkedIn,
@@ -672,16 +686,16 @@ const DataProvider = ({ children }) => {
             const res = await axios.post(
                 "http://localhost:5000/api/students/add",
                 {
-                    regno : studentsData.regno,
-                    name : studentsData.name,
-                    studentEmail : studentsData.studentEmail,
-                    year : studentsData.year,
-                    section : studentsData.section,
-                    image : studentsData.image,
-                    linkedin : studentsData.linkedin,
-                    github : studentsData.github,
-                    personalEmail : studentsData.personalEmail,
-                    portfolio : studentsData.portfolio
+                    regno: studentsData.regno,
+                    name: studentsData.name,
+                    studentEmail: studentsData.studentEmail,
+                    year: studentsData.year,
+                    section: studentsData.section,
+                    image: `https://drive.google.com/uc?export=view&id=${studentsData.image}`,
+                    linkedin: studentsData.linkedin,
+                    github: studentsData.github,
+                    personalEmail: studentsData.personalEmail,
+                    portfolio: studentsData.portfolio
                 },
                 {
                     headers: {
@@ -708,16 +722,16 @@ const DataProvider = ({ children }) => {
             const res = await axios.put(
                 `http://localhost:5000/api/students/update/${id}`,
                 {
-                    regno : studentsData.regno,
-                    name : studentsData.name,
-                    studentEmail : studentsData.studentEmail,
-                    year : studentsData.year,
-                    section : studentsData.section,
-                    image : studentsData.image,
-                    linkedin : studentsData.linkedin,
-                    github : studentsData.github,
-                    personalEmail : studentsData.personalEmail,
-                    portfolio : studentsData.portfolio
+                    regno: studentsData.regno,
+                    name: studentsData.name,
+                    studentEmail: studentsData.studentEmail,
+                    year: studentsData.year,
+                    section: studentsData.section,
+                    image: `https://drive.google.com/uc?export=view&id=${studentsData.image}`,
+                    linkedin: studentsData.linkedin,
+                    github: studentsData.github,
+                    personalEmail: studentsData.personalEmail,
+                    portfolio: studentsData.portfolio
                 },
                 {
                     headers: {

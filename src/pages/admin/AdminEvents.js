@@ -236,24 +236,24 @@ const AdminEvents = () => {
                 </td>
               </tr>
             ) : (
-              filteredEvents.map((event) => (
-                <tr key={event._id}>
-                  <td>{event.title}</td>
+              filteredEvents.map((event, index) => (
+                <tr key={event?._id || index}>
+                  <td>{event?.title}</td>
                   <td>
-                    {event.date ? format(parseISO(event.date), "MMM d, yyyy") : "—"} at {event.time}
+                    {event?.date ? format(parseISO(event?.date), "MMM d, yyyy") : "—"} at {event?.time}
                   </td>
-                  <td>{event.location}</td>
-                  <td>{event.type}</td>
+                  <td>{event?.location}</td>
+                  <td>{event?.type}</td>
                   <td>
                     <span
-                      className={`badge ${event.status === "Upcoming"
+                      className={`badge ${event?.status === "Upcoming"
                         ? "bg-success"
-                        : event.status === "past"
+                        : event?.status === "past"
                           ? "bg-secondary"
                           : "bg-warning"
                         }`}
                     >
-                      {event.status}
+                      {event?.status}
                     </span>
                   </td>
                   <td className="text-end">

@@ -282,7 +282,7 @@ const AdminStudents = () => {
                       <label className="form-label">Image URL</label>
                       <input
                         className="form-control"
-                        type="url"
+                        type="text"
                         name="image"
                         value={formData.image}
                         onChange={handleChange}
